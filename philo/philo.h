@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 17:18:34 by codespace         #+#    #+#             */
-/*   Updated: 2025/10/26 10:15:57 by codespace        ###   ########.fr       */
+/*   Updated: 2025/10/27 16:58:00 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ typedef	struct	s_philo
 	pthread_t		thrd;
 	int				id;
 	int		 		meals_count;
-	int         	last_meal;
+	long         	last_meal;
 	int				is_thinking;
 	// pthread_mutex_t	*l_fork;
 	// pthread_mutex_t	*r_fork;

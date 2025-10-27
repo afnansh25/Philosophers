@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 17:38:19 by codespace         #+#    #+#             */
-/*   Updated: 2025/10/26 10:27:11 by codespace        ###   ########.fr       */
+/*   Updated: 2025/10/27 17:02:58 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,9 +121,9 @@ int	init_data(t_data *d)
 		return (malloc_failed(d));
 	init_fork_index(d);
     if (init_global_mutexes(d)) 
-        return (malloc_failed(d));
+        {return (malloc_failed(d));}
     if (init_fork_mutexes(d))   
-        return (malloc_failed(d));
+        {return (malloc_failed(d));}
 	init_philos(d);
 	return (0);
 }

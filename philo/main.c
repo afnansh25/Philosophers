@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 17:38:13 by codespace         #+#    #+#             */
-/*   Updated: 2025/10/26 07:54:29 by codespace        ###   ########.fr       */
+/*   Updated: 2025/10/27 17:00:44 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,11 @@ int main(int ac, char **av)
         return (1);
     if (init_data(&phdata))
         return (1);
-    // if (start_routine(&phdata))
-    // {
-    //     cleanup_all(&phdata);
-    //     return (1);
-    // }
+    if (start_routine(&phdata))
+    {
+        cleanup_all(&phdata);
+        return (1);
+    }
     cleanup_all(&phdata);
     return (0);
 }
