@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 17:18:34 by codespace         #+#    #+#             */
-/*   Updated: 2025/10/27 16:58:00 by codespace        ###   ########.fr       */
+/*   Updated: 2025/10/27 17:29:56 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ typedef struct	s_data
 
 
 //free
+int	arg_err(const char *fmt, int idx);
 int		malloc_failed(t_data *d);
 void	cleanup_allocs(t_data *d);
 void	cleanup_all(t_data *d);
@@ -69,8 +70,10 @@ int		parse_args(int ac, char **av, t_data *data);
 //init
 int		init_data(t_data *d);
 
-//routine
+//start
 int		start_routine(t_data *d);
+
+//routine
 void	*philo_routine(void *arg);
 void	*monitor_routine(void *arg);
 
@@ -81,6 +84,7 @@ int	get_stop(t_data *d);
 long	now_ms(void);
 long	since_ms(long start);
 void	ms_sleep(long ms, t_data *d);
+void	log_state(t_philo *p, const char *msg);
 
 
 #endif

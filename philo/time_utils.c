@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 17:38:39 by codespace         #+#    #+#             */
-/*   Updated: 2025/10/26 08:53:11 by codespace        ###   ########.fr       */
+/*   Updated: 2025/10/27 17:29:31 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,4 +43,15 @@ void	ms_sleep(long ms, t_data *d)
 		pthread_mutex_unlock(&d->stop_mutex);
 		usleep(200); /* 0.2 ms chunks: responsive */
 	}
+}
+
+void	log_state(t_philo *p, const char *msg)
+{
+	t_data	*d;
+
+	d = p->phdata;
+	pthread_mutex_lock(&d->print);
+	if (!get_stop(d))
+		printf("%ld %d %s\n", since_ms(d->start_time), p->id, msg);
+	pthread_mutex_unlock(&d->print);
 }

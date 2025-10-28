@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 17:38:30 by codespace         #+#    #+#             */
-/*   Updated: 2025/10/26 07:24:48 by codespace        ###   ########.fr       */
+/*   Updated: 2025/10/27 17:27:27 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,35 +62,26 @@ static void	assign_args(int ac, char **av, t_data *d)
 
 int	parse_args(int ac, char **av, t_data *data)
 {
-    int     i;
-    long	value;
+	int		i;
+	long	val;
 
-    if (!data)
-    {
-        printf("Error: null data pointer\n");
-        return (1);
-    }
-    i = 1;
-    while (i < ac)
-    {
-        if (!is_num(av[i]))
-        {
-            printf("Error: argument %d is not a valid number\n", i);
-            return (1);
-        }
-        value = ft_atoi_long(av[i]);
-        if (value <= 0 || value > INT_MAX)
-        {
-            printf("Error: argument %d out of range\n", i);
-            return (1);
-        }
-		i++;
-    }
-    assign_args(ac, av, data);
-	if (data->num_philo > 200)
+	i = 0;
+	val = 0;
+	if (!data)
+		return (arg_err("Error: null data pointer\n", 0));
+	i = 1;
+	while (i < ac)
 	{
-		printf("Error: num_philo too large\n");
-		return (1);
+		if (!is_num(av[i]))
+			return (arg_err("Error: arg %d is not a valid number\n", i));
+		val = ft_atoi_long(av[i]);
+		if (val <= 0 || val > INT_MAX)
+			return (arg_err("Error: arg %d out of range\n", i));
+		i++;
 	}
+	assign_args(ac, av, data);
+	if (data->num_philo > 200)
+		return (arg_err("Error: num_philo too large\n", 0));
 	return (0);
 }
+

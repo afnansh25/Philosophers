@@ -6,11 +6,17 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 17:38:25 by codespace         #+#    #+#             */
-/*   Updated: 2025/10/26 07:59:13 by codespace        ###   ########.fr       */
+/*   Updated: 2025/10/27 17:27:45 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+int	arg_err(const char *fmt, int idx)
+{
+	printf(fmt, idx);
+	return (1);
+}
 
 int	malloc_failed(t_data *d)
 {
