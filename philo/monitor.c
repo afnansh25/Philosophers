@@ -3,14 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   monitor.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: ashaheen <ashaheen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 17:38:49 by codespace         #+#    #+#             */
-/*   Updated: 2025/10/26 10:15:48 by codespace        ###   ########.fr       */
+/*   Updated: 2025/11/01 18:22:27 by ashaheen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+long    get_last_meal(t_philo *p)
+{
+    long    t;
+
+    pthread_mutex_lock(&p->phdata->state);
+    t = p->last_meal;
+    pthread_mutex_unlock(&p->phdata->state);
+    return (t);
+}
 
 int	get_stop(t_data *d)
 {
@@ -61,14 +71,13 @@ void	*monitor_routine(void *arg)
         while (i < d->num_philo)
 		{
 			now = now_ms();
-			if (now - d->philo[i].last_meal >= d->time_to_die)
+			if (now - get_last_meal(&d->philo[i]) > d->time_to_die)
 			{
 				pthread_mutex_lock(&d->print);
 				if (!get_stop(d))
 				{
 					set_stop(d);
-					printf("%ld %d died\n",
-						since_ms(d->start_time), d->philo[i].id);
+					printf("%ld %d died\n", since_ms(d->start_time), d->philo[i].id);
 				}
 				pthread_mutex_unlock(&d->print);
 				return (NULL);

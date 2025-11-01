@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: ashaheen <ashaheen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 17:18:34 by codespace         #+#    #+#             */
-/*   Updated: 2025/10/27 16:58:00 by codespace        ###   ########.fr       */
+/*   Updated: 2025/11/01 18:21:48 by ashaheen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,9 @@ void	*monitor_routine(void *arg);
 
 //monitor
 int	get_stop(t_data *d);
+long    get_last_meal(t_philo *p);
+void    set_last_meal(t_philo *p, long t);
+
 
 //time_utils
 long	now_ms(void);

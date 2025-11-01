@@ -3,14 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   routine.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: ashaheen <ashaheen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 17:38:35 by codespace         #+#    #+#             */
-/*   Updated: 2025/10/27 17:08:30 by codespace        ###   ########.fr       */
+/*   Updated: 2025/11/01 18:23:53 by ashaheen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void    set_last_meal(t_philo *p, long t)
+{
+    pthread_mutex_lock(&p->phdata->state);
+    p->last_meal = t;
+    pthread_mutex_unlock(&p->phdata->state);
+}
 
 static void	log_state(t_philo *p, const char *msg)
 {
@@ -144,7 +151,7 @@ void	*philo_routine(void *arg)
 	{
 		if (take_two_if_allowed(p))
 		{
-			p->last_meal = now_ms();
+			set_last_meal(p, now_ms());
 			log_state(p, "is eating");
 			ms_sleep(d->time_to_eat, d);
 			p->meals_count += 1;
@@ -156,6 +163,8 @@ void	*philo_routine(void *arg)
 			log_state(p, "is sleeping");
 			ms_sleep(d->time_to_sleep, d);
 			log_state(p, "is thinking");
+			if (d->time_to_eat > d->time_to_sleep)
+    			usleep((d->time_to_eat - d->time_to_sleep) * 500);
 		}
 		else
 		{
