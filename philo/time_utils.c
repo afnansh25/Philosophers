@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   time_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: ashaheen <ashaheen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 17:38:39 by codespace         #+#    #+#             */
-/*   Updated: 2025/10/26 08:53:11 by codespace        ###   ########.fr       */
+/*   Updated: 2025/11/01 19:55:21 by ashaheen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 long	now_ms(void)
 {
-    struct timeval	tv;
+	struct timeval	tv;
 	long			ms;
 
 	gettimeofday(&tv, NULL);
@@ -25,6 +25,16 @@ long	now_ms(void)
 long	since_ms(long start)
 {
 	return (now_ms() - start);
+}
+
+int	get_stop(t_data *d)
+{
+	int	val;
+
+	pthread_mutex_lock(&d->stop_mutex);
+	val = d->stop_sim;
+	pthread_mutex_unlock(&d->stop_mutex);
+	return (val);
 }
 
 void	ms_sleep(long ms, t_data *d)
@@ -41,6 +51,6 @@ void	ms_sleep(long ms, t_data *d)
 			return ;
 		}
 		pthread_mutex_unlock(&d->stop_mutex);
-		usleep(200); /* 0.2 ms chunks: responsive */
+		usleep(200);
 	}
 }

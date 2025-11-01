@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free_error.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: ashaheen <ashaheen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 17:38:25 by codespace         #+#    #+#             */
-/*   Updated: 2025/10/26 07:59:13 by codespace        ###   ########.fr       */
+/*   Updated: 2025/11/01 19:29:01 by ashaheen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,26 +44,24 @@ void	cleanup_allocs(t_data *d)
 	}
 }
 
-void    cleanup_all(t_data *d)
+void	cleanup_all(t_data *d)
 {
-    int i;
+	int	i;
 
-    if (!d)
-        return ;
-    if (d->forks)
-    {
-        i = 0;
-        while (i < d->num_philo)
-        {
-            pthread_mutex_destroy(&d->forks[i]);
-            i++;
-        }
-    }
-    pthread_mutex_destroy(&d->stop_mutex);
-    pthread_mutex_destroy(&d->waiter);
-    pthread_mutex_destroy(&d->state);
-    pthread_mutex_destroy(&d->print);
-    cleanup_allocs(d);
+	if (!d)
+		return ;
+	if (d->forks)
+	{
+		i = 0;
+		while (i < d->num_philo)
+		{
+			pthread_mutex_destroy(&d->forks[i]);
+			i++;
+		}
+	}
+	pthread_mutex_destroy(&d->stop_mutex);
+	pthread_mutex_destroy(&d->waiter);
+	pthread_mutex_destroy(&d->state);
+	pthread_mutex_destroy(&d->print);
+	cleanup_allocs(d);
 }
-
-
