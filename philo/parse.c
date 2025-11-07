@@ -28,6 +28,8 @@ static long	ft_atoi_long(const char *s)
 		val = val * 10 + (s[i] - '0');
 		i++;
 	}
+	if (val > INT_MAX || val <= 0)
+		return (-1);
 	return (val);
 }
 
