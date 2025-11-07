@@ -31,7 +31,7 @@ static void	init_fork_index(t_data *d)
 		if (val > n)
 			val = ((val - 1) % n) + 1;
 		d->f_owner[i] = -1;
-		d->forks_st[i] = (char)val;
+		d->forks_st[i] = val;
 		i++;
 	}
 }
@@ -113,7 +113,7 @@ int	init_data(t_data *d)
 	d->philo = malloc(d->num_philo * sizeof(t_philo));
 	if (!d->philo)
 		return (malloc_failed(d));
-	d->forks_st = calloc(d->num_philo, sizeof(char));
+	d->forks_st = calloc(d->num_philo, sizeof(int));
 	if (!d->forks_st)
 		return (malloc_failed(d));
 	d->f_owner = malloc(d->num_philo * sizeof(int));

@@ -11,7 +11,7 @@ DEL			= rm -rf
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) $(FLAGS) -o $(NAME) $(OBJ) $(MLX_FLAGS)
+	$(CC) $(FLAGS) -o $(NAME) $(OBJ)
 
 %.o: %.c
 	$(CC) $(FLAGS) -c $< -o $@

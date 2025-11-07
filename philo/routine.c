@@ -36,8 +36,8 @@ int	take_two_if_allowed(t_philo *p)
 	get_lock_order(p->l_fork, p->r_fork, &f1, &f2);
 	pthread_mutex_lock(&d->forks[f1]);
 	pthread_mutex_lock(&d->forks[f2]);
-	if (d->forks_st[p->l_fork] == (char)p->id
-		|| d->forks_st[p->r_fork] == (char)p->id)
+	if (d->forks_st[p->l_fork] == p->id
+		|| d->forks_st[p->r_fork] == p->id)
 	{
 		pthread_mutex_unlock(&d->forks[f2]);
 		pthread_mutex_unlock(&d->forks[f1]);
@@ -84,8 +84,8 @@ static int	ph_cycle(t_philo *p)
 		log_state(p, "is eating");
 		ms_sleep(d->time_to_eat, d);
 		p->meals_count += 1;
-		d->forks_st[p->l_fork] = (char)p->id;
-		d->forks_st[p->r_fork] = (char)p->id;
+		d->forks_st[p->l_fork] = p->id;
+		d->forks_st[p->r_fork] = p->id;
 		release_two(p);
 		if (!get_stop(d))
 		{

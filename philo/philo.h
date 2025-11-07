@@ -44,7 +44,7 @@ typedef struct s_data
 	int					eat_limit;
 	long				start_time;
 	int					stop_sim;
-	char				*forks_st;
+	int					*forks_st;
 	int					*f_owner;
 	pthread_mutex_t		*forks;
 	pthread_mutex_t		print;
