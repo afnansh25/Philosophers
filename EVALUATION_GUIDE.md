@@ -5,13 +5,437 @@
 ---
 
 ## 📚 Table of Contents
-1. [Core Concepts](#core-concepts)
-2. [Key Threading Terms](#key-threading-terms)
-3. [Your Project Architecture](#your-project-architecture)
-4. [Function-by-Function Breakdown](#function-by-function-breakdown)
-5. [Common Scenarios & Edge Cases](#common-scenarios--edge-cases)
-6. [What Could Go Wrong](#what-could-go-wrong)
-7. [Evaluation Questions & Answers](#evaluation-questions--answers)
+1. [Foundation Theory](#foundation-theory)
+   - [CPUs/Processors](#cpus-processors---the-hardware-workers)
+   - [Operating System](#operating-system---the-manager)
+   - [Processes vs Threads](#processes-vs-threads)
+2. [Core Concepts](#core-concepts)
+3. [Key Threading Terms](#key-threading-terms)
+4. [Your Project Architecture](#your-project-architecture)
+5. [Function-by-Function Breakdown](#function-by-function-breakdown)
+6. [Common Scenarios & Edge Cases](#common-scenarios--edge-cases)
+7. [What Could Go Wrong](#what-could-go-wrong)
+8. [Evaluation Questions & Answers](#evaluation-questions--answers)
+
+---
+
+## 🏗️ Foundation Theory
+
+Before diving into the Dining Philosophers problem, you MUST understand how your computer executes code. This foundation is crucial!
+
+---
+
+### 💻 **CPUs/Processors - The Hardware Workers**
+
+#### **What is a CPU?**
+
+> A **CPU (Central Processing Unit)** or **processor** is the **physical hardware chip** that actually executes your code. Think of it as the **worker** that does the work.
+
+**Key Points:**
+- ✅ **HARDWARE** - Physical chip inside your computer
+- ✅ **EXECUTES instructions** - Actually runs your code
+- ✅ **Fixed quantity** - You can't create more (determined by your computer)
+- ✅ **Multiple cores** - Modern CPUs have 2, 4, 8, or more cores
+
+**Analogy:** 
+```
+🏭 FACTORY = Your Computer
+
+👷 WORKERS = CPU Cores
+  - Physical people doing the actual work
+  - You have 4 workers (4-core CPU)
+  - Can't magically create more workers!
+  - Each worker can do ONE task at a time
+```
+
+#### **CPU Cores Explained:**
+
+```
+Your Laptop Specs: Intel i5 with 4 cores
+
+What this means:
+  ├─ Core 1: Can run 1 thread at a time ⚡
+  ├─ Core 2: Can run 1 thread at a time ⚡
+  ├─ Core 3: Can run 1 thread at a time ⚡
+  └─ Core 4: Can run 1 thread at a time ⚡
+  
+Total: 4 things can run TRULY in PARALLEL
+```
+
+#### **How Code Runs on CPU:**
+
+```
+WITHOUT THREADS (Single-core usage):
+CPU Core 1: [Your program]━━━━━━━━━━━━━━━
+CPU Core 2: 😴 Idle
+CPU Core 3: 😴 Idle  
+CPU Core 4: 😴 Idle
+→ Wasting 3 cores!
+
+WITH THREADS (Multi-core usage):
+CPU Core 1: [Philosopher 1]━━━━━━━━━━━━━
+CPU Core 2: [Philosopher 2]━━━━━━━━━━━━━
+CPU Core 3: [Philosopher 3]━━━━━━━━━━━━━
+CPU Core 4: [Monitor thread]━━━━━━━━━━━
+→ Using all cores efficiently! ⚡
+```
+
+**Important:** The CPU is what **ACTUALLY EXECUTES** your instructions. Everything else (OS, threads, processes) is about **ORGANIZING** what runs on the CPU.
+
+---
+
+### 👔 **Operating System - The Manager**
+
+#### **What is an Operating System (OS)?**
+
+> The **Operating System** is the **manager software** that controls your computer's hardware and runs your programs. It's the invisible boss coordinating everything!
+
+**Examples:** Linux, macOS, Windows, iOS, Android
+
+**Key Jobs:**
+
+```
+🏢 COMPANY = Your Computer
+
+👔 CEO/MANAGER = Operating System
+  
+  What the OS does:
+  ├─ Manages programs (loads, runs, stops them)
+  ├─ Shares CPU cores (decides what runs where)
+  ├─ Allocates memory (gives RAM to programs)
+  ├─ Controls hardware (keyboard, screen, disk)
+  └─ Provides services (system calls like pthread_create)
+```
+
+#### **1. Process Management** 📱
+
+```
+YOU: Run ./philo
+
+OS: "Okay! I'll:
+     1. Load philo from disk into RAM
+     2. Assign it memory space
+     3. Give it a CPU core to run on
+     4. Create the main thread
+     5. Track it while running
+     6. Clean up when it exits"
+```
+
+#### **2. CPU Scheduling** ⚡
+
+```
+SCENARIO: 4 CPU cores, 20 programs running
+
+OS: "I'll rapidly switch programs between cores!"
+
+CPU 1: [Chrome][Spotify][VS Code][Chrome]...
+CPU 2: [Slack][Terminal][Slack][Terminal]...
+CPU 3: [Discord][Email][Discord][Email]...
+CPU 4: [philo][philo][philo][philo]...
+       ↑ Switches every few milliseconds!
+
+Result: All 20 programs appear to run simultaneously!
+This is called "TIME-SHARING" or "SCHEDULING"
+```
+
+#### **3. Memory Management** 💾
+
+```
+┌─────────────────────────────┐
+│ RAM (8GB total)             │
+├─────────────────────────────┤
+│ 0-500MB:   OS itself        │
+│ 500-1000:  Chrome           │ ← Process 1
+│ 1000-1500: VS Code          │ ← Process 2
+│ 1500-1510: philo            │ ← Process 3 (your program!)
+│ 1510-8000: Free             │
+└─────────────────────────────┘
+
+OS gives each program its own protected memory space!
+Programs can't access each other's memory! 🚫
+```
+
+#### **4. System Calls - Services the OS Provides** 📞
+
+**In your philosophers project, you constantly ask the OS for help:**
+
+```c
+pthread_create()     ← "OS, create a thread for me!"
+pthread_mutex_lock() ← "OS, lock this mutex!"
+gettimeofday()       ← "OS, what time is it?"
+printf()             ← "OS, print this to screen!"
+malloc()             ← "OS, give me memory!"
+usleep()             ← "OS, pause this thread!"
+```
+
+**Every one of these functions is a request to the Operating System!**
+
+#### **Your Philosophers & The OS:**
+
+```
+Step 1: ./philo 5 800 200 200
+
+Step 2: OS loads your program
+  ├─ Finds 'philo' file on disk
+  ├─ Allocates 10MB RAM
+  ├─ Creates main thread
+  └─ Assigns to CPU Core 1
+
+Step 3: pthread_create() [5 times]
+  OS: "Creating 5 philosopher threads!"
+  ├─ Thread 1 → CPU Core 2
+  ├─ Thread 2 → CPU Core 3
+  ├─ Thread 3 → CPU Core 4
+  ├─ Thread 4 → CPU Core 1 (shares with main)
+  └─ Thread 5 → CPU Core 2 (shares)
+
+Step 4: pthread_mutex_lock(&fork[0])
+  OS: "Checking mutex status..."
+  ├─ If free: "You got it!"
+  └─ If locked: "WAIT here!" (puts thread to sleep)
+
+Step 5: Program ends
+  OS: "Cleaning up!"
+  ├─ Destroys all threads
+  ├─ Frees all memory
+  └─ Removes from RAM
+```
+
+---
+
+### 🆚 **Processes vs Threads**
+
+This is **CRITICAL** to understand! Many people confuse these.
+
+#### **📦 PROCESS = Running Program**
+
+> A **process** is a **running program** with its **own memory space**. Each process is isolated from others.
+
+**Characteristics:**
+- ✅ Has its own memory (other processes can't access it)
+- ✅ Contains at least ONE thread (the main thread)
+- ✅ Expensive to create (OS must allocate lots of resources)
+- ✅ Isolated and protected from other processes
+
+**Example:**
+```
+When you run: ./philo 5 800 200 200
+
+OS creates a NEW PROCESS:
+  ├─ Process name: "philo"
+  ├─ Process ID (PID): 12345
+  ├─ Memory: 10MB (private, isolated)
+  ├─ Code: Your compiled program
+  └─ Main thread: Starts running main()
+```
+
+#### **🧵 THREAD = Execution Path**
+
+> A **thread** is an **execution path within a process**. Multiple threads in the same process **share the same memory**.
+
+**Characteristics:**
+- ✅ Lives inside a process
+- ✅ Shares memory with other threads in the same process
+- ✅ Cheap to create (just another execution path)
+- ✅ Easy communication (share variables directly)
+
+**Example:**
+```
+Your philo process creates 6 more threads:
+  ├─ Thread 1: main (already exists)
+  ├─ Thread 2: philosopher 1
+  ├─ Thread 3: philosopher 2
+  ├─ Thread 4: philosopher 3
+  ├─ Thread 5: philosopher 4
+  ├─ Thread 6: philosopher 5
+  └─ Thread 7: monitor
+
+All 7 threads live INSIDE the philo process
+All 7 threads SHARE the same memory!
+```
+
+---
+
+#### **🔑 The KEY Difference:**
+
+| | **PROCESS** | **THREAD** |
+|---|---|---|
+| **What?** | Running program | Execution path in a program |
+| **Memory** | Has OWN memory | SHARES memory with other threads |
+| **Independence** | Isolated from other processes | Lives inside a process |
+| **Cost** | Expensive to create | Cheap to create |
+| **Communication** | Hard (need IPC mechanisms) | Easy (share variables!) |
+
+---
+
+#### **🎭 The Restaurant Analogy:**
+
+```
+🏙️ CITY = Your Computer
+
+🏪 RESTAURANT A = Process 1 (Chrome)
+  ├─ Building with own kitchen, supplies
+  ├─ Chef 1 (Thread 1): Rendering webpage
+  ├─ Chef 2 (Thread 2): Playing video
+  └─ Chef 3 (Thread 3): Downloading file
+  → All chefs share Restaurant A's kitchen
+
+🏪 RESTAURANT B = Process 2 (philo)
+  ├─ Different building, own kitchen, supplies
+  ├─ Chef 1 (Thread 1): main
+  ├─ Chef 2 (Thread 2): philosopher 1
+  ├─ Chef 3 (Thread 3): philosopher 2
+  └─ Manager (Thread 7): monitor
+  → All chefs share Restaurant B's kitchen
+
+Restaurant A and B:
+  ✅ CANNOT share supplies (isolated memory)
+  ✅ Completely separate businesses
+  
+Chefs within same restaurant:
+  ✅ SHARE the same kitchen (same memory)
+  ✅ Need to coordinate (mutexes!)
+```
+
+---
+
+#### **Memory Isolation vs Sharing:**
+
+**Between PROCESSES (Isolated):**
+```
+Process 1 (Chrome):
+  int x = 5;  ← Chrome's variable in Chrome's memory
+
+Process 2 (philo):
+  int x = 10; ← philo's variable in philo's memory
+  
+These are DIFFERENT x variables!
+Chrome can't access philo's x! 🚫
+philo can't access Chrome's x! 🚫
+→ Complete isolation!
+```
+
+**Between THREADS in SAME process (Shared):**
+```
+philo Process:
+  int forks_st[5]; ← Shared by ALL threads!
+
+Thread 1 (philosopher 1):
+  forks_st[0] = 1; ← Writes to shared memory
+
+Thread 2 (philosopher 2):
+  val = forks_st[0]; ← Reads SAME memory! Gets 1!
+
+Thread 3 (monitor):
+  printf("%d", forks_st[0]); ← Also SAME memory!
+
+All threads see the SAME variable! ✅
+This is WHY we need MUTEXES! 🔒
+```
+
+---
+
+#### **Concurrency vs Parallelism:**
+
+**CONCURRENCY** (Multiple threads, any CPU count):
+> Multiple tasks making progress, possibly through time-sharing
+
+```
+5 threads, 1 CPU core:
+  CPU: [T1][T2][T3][T4][T5][T1][T2]...
+       ↑ Switches rapidly (appears simultaneous)
+  
+  This is CONCURRENT but NOT parallel
+```
+
+**PARALLELISM** (Multiple threads, multiple CPUs):
+> Multiple tasks running at the EXACT same instant
+
+```
+5 threads, 4 CPU cores:
+  CPU 1: [T1][T1][T1][T1]...
+  CPU 2: [T2][T2][T2][T2]...
+  CPU 3: [T3][T3][T3][T3]...
+  CPU 4: [T4][T4][T4][T4]...
+         ↑ 4 running truly in PARALLEL!
+  
+  T5 waits or shares time with another
+```
+
+---
+
+#### **Your Philosophers - Complete Picture:**
+
+```
+YOU RUN: ./philo 5 800 200 200
+
+┌─────────────────────────────────────────────┐
+│  PROCESS: philo (PID: 12345)                │
+│  ┌────────────────────────────────────────┐ │
+│  │ MEMORY (10MB - Private & Isolated)     │ │
+│  │                                        │ │
+│  │ Code Section:                          │ │
+│  │   ├─ main()                            │ │
+│  │   ├─ philo_routine()                   │ │
+│  │   ├─ monitor_routine()                 │ │
+│  │   └─ All your functions                │ │
+│  │                                        │ │
+│  │ Data Section (SHARED by all threads!): │ │
+│  │   ├─ t_data phdata                     │ │
+│  │   ├─ t_philo philos[5]                 │ │
+│  │   ├─ pthread_mutex_t forks[5]          │ │
+│  │   └─ All global/heap variables         │ │
+│  └────────────────────────────────────────┘ │
+│                                             │
+│  THREADS (7 execution paths):               │
+│  ┌──────────────────────────────────────┐  │
+│  │ Main Thread     → Waiting            │  │
+│  │ Philosopher 1   → Eating             │  │
+│  │ Philosopher 2   → Sleeping           │  │
+│  │ Philosopher 3   → Thinking           │  │
+│  │ Philosopher 4   → Waiting for forks  │  │
+│  │ Philosopher 5   → Eating             │  │
+│  │ Monitor         → Checking deaths    │  │
+│  └──────────────────────────────────────┘  │
+│         ↑ All share the SAME memory above! │
+└─────────────────────────────────────────────┘
+
+Assigned to CPUs by OS:
+  CPU 1: Main thread + Philosopher 4
+  CPU 2: Philosopher 1 + Philosopher 5  
+  CPU 3: Philosopher 2 + Philosopher 3
+  CPU 4: Monitor
+```
+
+---
+
+#### **Why This Matters for Your Project:**
+
+1. **All philosophers share the same forks array** 🍴
+   - Because they're threads in the same process
+   - They share memory!
+   - This is why we need mutexes to coordinate
+
+2. **Multiple philosophers can eat at the same time** ⚡
+   - If you have multiple CPU cores
+   - True parallelism!
+   - Faster than sequential execution
+
+3. **Race conditions happen because of memory sharing** 🏎️
+   - Two threads write to `last_meal` at same time
+   - Two threads read `meals_count` at same time
+   - Must protect with mutexes!
+
+---
+
+### 📝 **Quick Reference:**
+
+| Component | What It Is | Your Control | Example |
+|-----------|-----------|--------------|---------|
+| **CPU** | Hardware that executes | ❌ Can't create more | 4-core processor |
+| **OS** | Manager software | ❌ Just use its services | Linux, macOS |
+| **Process** | Running program | ✅ Run `./philo` | Your philo program |
+| **Thread** | Execution path | ✅ `pthread_create()` | Each philosopher |
 
 ---
 
