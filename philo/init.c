@@ -12,7 +12,7 @@
 
 #include "philo.h"
 
-static void	init_fork_index(t_data *d)
+void	init_fork_index(t_data *d)
 {
 	int	i;
 	int	n;
@@ -113,7 +113,7 @@ int	init_data(t_data *d)
 	d->philo = malloc(d->num_philo * sizeof(t_philo));
 	if (!d->philo)
 		return (malloc_failed(d));
-	d->forks_st = calloc(d->num_philo, sizeof(int));
+	d->forks_st = malloc(d->num_philo * sizeof(int));
 	if (!d->forks_st)
 		return (malloc_failed(d));
 	d->f_owner = malloc(d->num_philo * sizeof(int));

@@ -26,10 +26,10 @@ static long	ft_atoi_long(const char *s)
 	while (s[i] >= '0' && s[i] <= '9')
 	{
 		val = val * 10 + (s[i] - '0');
+		if (val > INT_MAX || val <= 0)
+			return (-1);
 		i++;
 	}
-	if (val > INT_MAX || val <= 0)
-		return (-1);
 	return (val);
 }
 

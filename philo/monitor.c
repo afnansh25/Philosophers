@@ -86,7 +86,7 @@ void	*monitor_routine(void *arg)
 			set_stop(d);
 			stop = 1;
 		}
-		usleep(1000);
+		usleep(500);
 	}
 	return (NULL);
 }

@@ -65,6 +65,7 @@ int						parse_args(int ac, char **av, t_data *data);
 
 // init
 int						init_data(t_data *d);
+void					init_fork_index(t_data *d);
 
 /* start */
 int						start_routine(t_data *d);
@@ -80,6 +81,7 @@ void					*philo_routine(void *arg);
 void					*monitor_routine(void *arg);
 int						get_stop(t_data *d);
 long					get_last_meal(t_philo *p);
+int						everyone_ate(t_data *d);
 
 // time_utils
 long					now_ms(void);

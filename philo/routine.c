@@ -87,17 +87,16 @@ static int	ph_cycle(t_philo *p)
 		d->forks_st[p->l_fork] = p->id;
 		d->forks_st[p->r_fork] = p->id;
 		release_two(p);
+		if (everyone_ate(d))
+			init_fork_index(d);
 		if (!get_stop(d))
 		{
 			log_state(p, "is sleeping");
 			ms_sleep(d->time_to_sleep, d);
 			log_state(p, "is thinking");
-			if (d->time_to_eat > d->time_to_sleep)
-				usleep((d->time_to_eat - d->time_to_sleep) * 500);
 		}
 		return (1);
 	}
-	usleep(200);
 	return (0);
 }
 
@@ -118,8 +117,6 @@ void	*philo_routine(void *arg)
 		pthread_mutex_unlock(&d->forks[p->l_fork]);
 		done = 1;
 	}
-	if (!done && (p->id % 2 == 0))
-		usleep(200);
 	while (!done && !get_stop(d))
 		ph_cycle(p);
 	return (NULL);

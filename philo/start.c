@@ -54,8 +54,6 @@ int	start_routine(t_data *d)
 	i = 0;
 	while (i < d->num_philo)
 	{
-		if (d->philo[i].id % 2 == 0)
-			usleep(200);
 		if (pthread_create(&d->philo[i].thrd, NULL,
 				philo_routine, &d->philo[i]))
 			return (join_threads(d, 1));
