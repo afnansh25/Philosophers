@@ -29,7 +29,6 @@ typedef struct s_philo
 	int					id;
 	int					meals_count;
 	long				last_meal;
-	int					is_thinking;
 	int					l_fork;
 	int					r_fork;
 	t_data				*phdata;
@@ -45,11 +44,9 @@ typedef struct s_data
 	long				start_time;
 	int					stop_sim;
 	int					*forks_st;
-	int					*f_owner;
 	pthread_mutex_t		*forks;
 	pthread_mutex_t		print;
 	pthread_mutex_t		state;
-	pthread_mutex_t		waiter;
 	pthread_mutex_t		stop_mutex;
 	pthread_t			monit;
 	t_philo				*philo;

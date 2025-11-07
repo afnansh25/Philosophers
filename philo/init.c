@@ -30,7 +30,7 @@ void	init_fork_index(t_data *d)
 			val = i + 2;
 		if (val > n)
 			val = ((val - 1) % n) + 1;
-		d->f_owner[i] = -1;
+		//d->f_owner[i] = -1;
 		d->forks_st[i] = val;
 		i++;
 	}
@@ -45,15 +45,8 @@ static int	init_global_mutexes(t_data *d)
 		pthread_mutex_destroy(&d->print);
 		return (1);
 	}
-	if (pthread_mutex_init(&d->waiter, NULL))
-	{
-		pthread_mutex_destroy(&d->state);
-		pthread_mutex_destroy(&d->print);
-		return (1);
-	}
 	if (pthread_mutex_init(&d->stop_mutex, NULL))
 	{
-		pthread_mutex_destroy(&d->waiter);
 		pthread_mutex_destroy(&d->state);
 		pthread_mutex_destroy(&d->print);
 		return (1);
@@ -91,7 +84,6 @@ static void	init_philos(t_data *d)
 		d->philo[i].id = i + 1;
 		d->philo[i].meals_count = 0;
 		d->philo[i].last_meal = 0;
-		d->philo[i].is_thinking = 0;
 		d->philo[i].l_fork = i;
 		d->philo[i].r_fork = (i + 1) % n;
 		d->philo[i].phdata = d;
@@ -106,7 +98,7 @@ int	init_data(t_data *d)
 	d->philo = NULL;
 	d->forks = NULL;
 	d->forks_st = NULL;
-	d->f_owner = NULL;
+	//d->f_owner = NULL;
 	d->forks = malloc(d->num_philo * sizeof(pthread_mutex_t));
 	if (!d->forks)
 		return (malloc_failed(d));
@@ -116,9 +108,9 @@ int	init_data(t_data *d)
 	d->forks_st = malloc(d->num_philo * sizeof(int));
 	if (!d->forks_st)
 		return (malloc_failed(d));
-	d->f_owner = malloc(d->num_philo * sizeof(int));
-	if (!d->f_owner)
-		return (malloc_failed(d));
+	// d->f_owner = malloc(d->num_philo * sizeof(int));
+	// if (!d->f_owner)
+	// 	return (malloc_failed(d));
 	init_fork_index(d);
 	if (init_global_mutexes(d))
 		return (malloc_failed(d));

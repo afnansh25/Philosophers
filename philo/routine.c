@@ -83,7 +83,9 @@ static int	ph_cycle(t_philo *p)
 		set_last_meal(p, now_ms());
 		log_state(p, "is eating");
 		ms_sleep(d->time_to_eat, d);
+		pthread_mutex_lock(&d->state);
 		p->meals_count += 1;
+		pthread_mutex_unlock(&d->state);
 		d->forks_st[p->l_fork] = p->id;
 		d->forks_st[p->r_fork] = p->id;
 		release_two(p);

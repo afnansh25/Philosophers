@@ -22,11 +22,11 @@ void	cleanup_allocs(t_data *d)
 {
 	if (!d)
 		return ;
-	if (d->f_owner)
-	{
-		free(d->f_owner);
-		d->f_owner = NULL;
-	}
+	// if (d->f_owner)
+	// {
+	// 	free(d->f_owner);
+	// 	d->f_owner = NULL;
+	// }
 	if (d->forks_st)
 	{
 		free(d->forks_st);
@@ -60,7 +60,6 @@ void	cleanup_all(t_data *d)
 		}
 	}
 	pthread_mutex_destroy(&d->stop_mutex);
-	pthread_mutex_destroy(&d->waiter);
 	pthread_mutex_destroy(&d->state);
 	pthread_mutex_destroy(&d->print);
 	cleanup_allocs(d);

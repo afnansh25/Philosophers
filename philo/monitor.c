@@ -33,6 +33,7 @@ int	everyone_ate(t_data *d)
 {
 	int	i;
 	int	done;
+	int	count;
 
 	if (d->eat_limit <= 0)
 		return (0);
@@ -40,7 +41,10 @@ int	everyone_ate(t_data *d)
 	done = 0;
 	while (i < d->num_philo)
 	{
-		if (d->philo[i].meals_count >= d->eat_limit)
+		pthread_mutex_lock(&d->state);
+		count = d->philo[i].meals_count;
+		pthread_mutex_unlock(&d->state);
+		if (count >= d->eat_limit)
 			done++;
 		i++;
 	}
